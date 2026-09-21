@@ -8,14 +8,14 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     background: #ffffff;
-    color: #4a3728;
+    color: #a89078;
     font-family: Arial, sans-serif;
     font-size: 13px;
     line-height: 1.4;
   }
   header {
     padding: 16px 20px 10px;
-    border-bottom: 1px solid #4a3728;
+    border-bottom: 1px solid #a89078;
   }
   header h1 {
     font-size: 16px;
@@ -24,11 +24,11 @@
   }
   header .sub {
     font-size: 12px;
-    color: #4a3728;
+    color: #a89078;
   }
   header .author {
     font-size: 11px;
-    color: #4a3728;
+    color: #a89078;
     margin-top: 4px;
   }
   main {
@@ -38,7 +38,7 @@
   }
   aside {
     padding: 12px 14px;
-    border-right: 1px solid #4a3728;
+    border-right: 1px solid #a89078;
   }
   .controls-group { margin-bottom: 16px; }
   .controls-group h3 {
@@ -47,7 +47,7 @@
     color: #7a0d1a;
     margin-bottom: 6px;
     padding-bottom: 2px;
-    border-bottom: 1px solid #4a3728;
+    border-bottom: 1px solid #a89078;
   }
   .control { margin-bottom: 8px; }
   .control label {
@@ -62,12 +62,12 @@
   .radio-row label {
     flex: 1;
     padding: 3px 4px;
-    border: 1px solid #4a3728;
+    border: 1px solid #a89078;
     background: #fff;
     cursor: pointer;
     text-align: center;
     font-size: 11px;
-    color: #4a3728;
+    color: #a89078;
   }
   .radio-row label.active { background: #7a0d1a; color: #fff; border-color: #7a0d1a; }
   .radio-row input { display: none; }
@@ -86,7 +86,7 @@
   button:hover { background: #7a0d1a; color: #fff; }
   button.primary { background: #7a0d1a; color: #fff; }
   section.canvas-area { padding: 0; display: flex; flex-direction: column; }
-  .panel { padding: 12px 16px; border-bottom: 1px solid #4a3728; }
+  .panel { padding: 12px 16px; border-bottom: 1px solid #a89078; }
   .panel:last-child { border-bottom: none; }
   .panel h2 {
     font-size: 12px;
@@ -94,7 +94,7 @@
     color: #7a0d1a;
     margin-bottom: 6px;
   }
-  canvas { display: block; width: 100%; background: #fff; border: 1px solid #4a3728; }
+  canvas { display: block; width: 100%; background: #fff; border: 1px solid #a89078; }
   #trajectory-canvas { height: 340px; }
   #histogram-canvas { height: 140px; }
   .stats-grid {
@@ -104,19 +104,19 @@
     margin-top: 8px;
     font-size: 12px;
   }
-  .stat { padding: 4px 0; border-bottom: 1px solid #4a3728; }
-  .stat .label { font-size: 11px; color: #4a3728; }
+  .stat { padding: 4px 0; border-bottom: 1px solid #a89078; }
+  .stat .label { font-size: 11px; color: #a89078; }
   .stat .value {
     font-size: 16px;
     color: #7a0d1a;
     font-weight: bold;
     font-family: Arial, sans-serif;
   }
-  .stat .sub { font-size: 10px; color: #4a3728; }
-  .note { font-size: 11px; color: #4a3728; margin-top: 6px; }
+  .stat .sub { font-size: 10px; color: #a89078; }
+  .note { font-size: 11px; color: #a89078; margin-top: 6px; }
   @media (max-width: 800px) {
     main { grid-template-columns: 1fr; }
-    aside { border-right: none; border-bottom: 1px solid #4a3728; }
+    aside { border-right: none; border-bottom: 1px solid #a89078; }
   }
 </style>
 </head>
@@ -437,7 +437,7 @@ function renderTrajectory() {
   trajCtx.fillStyle = '#ffffff';
   trajCtx.fillRect(0, 0, W, H);
 
-  trajCtx.strokeStyle = '#4a3728';
+  trajCtx.strokeStyle = '#a89078';
   trajCtx.lineWidth = 1;
   trajCtx.strokeRect(pad.l, pad.t, plotW, plotH);
 
@@ -456,7 +456,7 @@ function renderTrajectory() {
   trajCtx.lineTo(pad.l + plotW, yToPx(params.b));
   trajCtx.stroke();
 
-  trajCtx.strokeStyle = '#4a3728';
+  trajCtx.strokeStyle = '#a89078';
   trajCtx.setLineDash([3, 3]);
   trajCtx.lineWidth = 0.5;
   trajCtx.beginPath();
@@ -469,7 +469,7 @@ function renderTrajectory() {
   if (nSnap >= 2) {
     const N = params.N;
     for (let i = 0; i < N; i++) {
-      trajCtx.strokeStyle = 'rgba(74, 55, 40, 0.5)';
+      trajCtx.strokeStyle = 'rgba(168, 144, 120, 0.7)';
       trajCtx.lineWidth = 0.6;
       trajCtx.beginPath();
       let started = false;
@@ -506,7 +506,7 @@ function renderTrajectory() {
     trajCtx.fill();
   }
 
-  trajCtx.fillStyle = '#4a3728';
+  trajCtx.fillStyle = '#a89078';
   trajCtx.font = '10px Arial, sans-serif';
   trajCtx.textAlign = 'right';
   trajCtx.textBaseline = 'middle';
@@ -529,13 +529,13 @@ function renderHistogram() {
 
   histCtx.fillStyle = '#fff';
   histCtx.fillRect(0, 0, W, H);
-  histCtx.strokeStyle = '#4a3728';
+  histCtx.strokeStyle = '#a89078';
   histCtx.lineWidth = 1;
   histCtx.strokeRect(pad.l, pad.t, plotW, plotH);
 
   const n = sim.absorbTime.length;
   if (n === 0) {
-    histCtx.fillStyle = '#4a3728';
+    histCtx.fillStyle = '#a89078';
     histCtx.font = '11px Arial, sans-serif';
     histCtx.textAlign = 'center';
     histCtx.textBaseline = 'middle';
@@ -567,11 +567,11 @@ function renderHistogram() {
     const x = pad.l + i * barW;
     histCtx.fillStyle = '#7a0d1a';
     histCtx.fillRect(x, pad.t + plotH - bH, barW, bH);
-    histCtx.fillStyle = '#4a3728';
+    histCtx.fillStyle = '#a89078';
     histCtx.fillRect(x, pad.t + plotH - bH - aH, barW, aH);
   }
 
-  histCtx.fillStyle = '#4a3728';
+  histCtx.fillStyle = '#a89078';
   histCtx.font = '10px Arial, sans-serif';
   histCtx.textAlign = 'left';
   histCtx.textBaseline = 'top';
@@ -584,9 +584,9 @@ function renderHistogram() {
   histCtx.textBaseline = 'middle';
   histCtx.fillStyle = '#7a0d1a';
   histCtx.fillRect(8, pad.t + 8, 10, 10);
-  histCtx.fillStyle = '#4a3728';
+  histCtx.fillStyle = '#a89078';
   histCtx.fillText('hit b', 22, pad.t + 13);
-  histCtx.fillStyle = '#4a3728';
+  histCtx.fillStyle = '#a89078';
   histCtx.fillRect(8, pad.t + 26, 10, 10);
   histCtx.fillText('hit a', 22, pad.t + 31);
 }
