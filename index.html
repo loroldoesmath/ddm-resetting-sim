@@ -21,7 +21,7 @@
     margin: 0; padding: 0;
     background: var(--bg);
     color: var(--fg);
-    font-family: 'Ubuntu Mono', 'Ubuntu', monospace;
+    font-family: 'Ubuntu Mono', monospace;
     font-weight: 400;
     font-size: 14px;
     line-height: 1.5;
@@ -301,7 +301,7 @@
 
   <section class="canvas-area">
     <div class="panel">
-      <h2>Trajectories &mdash; position vs. time</h2>
+      <h2>Trajectories &mdash; position v. time</h2>
       <canvas id="trajectory-canvas"></canvas>
       <div class="analytic-note">
         Solid horizontal lines: absorbing boundaries a, b. Dashed line: start x<sub>0</sub>.
@@ -318,12 +318,12 @@
       <h2>Running statistics</h2>
       <div class="stats-grid">
         <div class="stat">
-          <div class="label">ε₊ &mdash; P(hit b)</div>
+          <div class="label">ε₊; P(hit b)</div>
           <div class="value" id="stat-eps-plus">—</div>
           <div class="sub" id="stat-eps-plus-ci">based on 0 absorptions</div>
         </div>
         <div class="stat">
-          <div class="label">ε₋ &mdash; P(hit a)</div>
+          <div class="label">ε₋; P(hit a)</div>
           <div class="value" id="stat-eps-minus">—</div>
           <div class="sub" id="stat-eps-minus-ci">&nbsp;</div>
         </div>
@@ -333,12 +333,12 @@
           <div class="sub" id="stat-mfpt-sub">unconditional mean first passage</div>
         </div>
         <div class="stat">
-          <div class="label">⟨t⟩₊ &mdash; cond. mean, hit b</div>
+          <div class="label">⟨t⟩₊; cond. mean, hit b</div>
           <div class="value" id="stat-t-plus">—</div>
           <div class="sub">&nbsp;</div>
         </div>
         <div class="stat">
-          <div class="label">⟨t⟩₋ &mdash; cond. mean, hit a</div>
+          <div class="label">⟨t⟩₋; cond. mean, hit a</div>
           <div class="value" id="stat-t-minus">—</div>
           <div class="sub">&nbsp;</div>
         </div>
@@ -361,11 +361,8 @@
 </footer>
 
 <script>
-// ============================================================================
-// Drift-Diffusion Model with Resetting — Agent-Based Simulator
-// ============================================================================
 
-// --- state ------------------------------------------------------------------
+// state 
 const params = {
   a: 0, b: 3, x0: 1,
   v: 0.5, D: 1,
@@ -376,7 +373,7 @@ const params = {
 };
 
 const sim = {
-  particles: [],          // {x, birthTime, history: [[t,x],...] } — history for τ-delay reset
+  particles: [],          // {x, birthTime, history: [[t,x],...] } history for τ-delay reset
   simTime: 0,
   running: true,
   // Statistics
@@ -386,7 +383,7 @@ const sim = {
   maxTrailAge: 8,         // seconds of sim time to show trailing paths
 };
 
-// --- randn (Box-Muller) -----------------------------------------------------
+// randn (Box-Muller) 
 let _spare = null;
 function randn() {
   if (_spare !== null) { const s = _spare; _spare = null; return s; }
@@ -420,7 +417,7 @@ function ensureParticleCount() {
   if (sim.particles.length > params.N) sim.particles.length = params.N;
 }
 
-// --- one integration step for a single particle -----------------------------
+// one integration step for a single particle
 // Euler-Maruyama with Brownian-bridge boundary correction.
 // If the raw step ends beyond a boundary, absorb. If it stays interior, then
 // compute the Brownian-bridge probability that the path DID touch a boundary
@@ -482,7 +479,7 @@ function stepParticle(p) {
   // path may have touched a boundary between them). For a bridge from x_old
   // to x_new over [0, dt] with variance 2*D*dt, the probability that the
   // path hits level L given endpoints y1, y2 (with L outside [y1,y2] region)
-  // is exp( -2*(L-y1)*(L-y2) / (2*D*dt) ) — the classical Brownian bridge
+  // is exp( -2*(L-y1)*(L-y2) / (2*D*dt) ), the classical Brownian bridge
   // maximum formula.
   const varStep = 2 * D * dt;
   // hit level a (below both endpoints if xOld,xNew > a)
@@ -513,7 +510,7 @@ function stepParticle(p) {
   return null;
 }
 
-// --- main simulation tick ---------------------------------------------------
+// main simulation tick
 function tick() {
   if (!sim.running) return;
 
@@ -543,7 +540,7 @@ function tick() {
   }
 }
 
-// --- statistics -------------------------------------------------------------
+//  statistics 
 function computeStats() {
   const n = sim.absorbAt.length;
   if (n === 0) return null;
@@ -565,7 +562,7 @@ function computeStats() {
   };
 }
 
-// --- rendering: trajectory canvas -------------------------------------------
+// rendering: trajectory canvas 
 const trajCanvas = document.getElementById('trajectory-canvas');
 const trajCtx = trajCanvas.getContext('2d');
 const histCanvas = document.getElementById('histogram-canvas');
@@ -684,7 +681,7 @@ function renderTrajectory() {
   trajCtx.fillText(`t = ${tMax.toFixed(1)}`, pad.l + plotW, pad.t + plotH + 4);
 }
 
-// --- rendering: histogram of first-passage times ----------------------------
+// rendering: histogram of first-passage times 
 function renderHistogram() {
   const rect = histCanvas.getBoundingClientRect();
   const W = rect.width, H = rect.height;
@@ -759,7 +756,7 @@ function renderHistogram() {
   histCtx.fillText('hit a', pad.l + 74, pad.t + 4);
 }
 
-// --- rendering: stats block -------------------------------------------------
+//  rendering: stats block 
 function fmt(x, d = 3) {
   if (x === null || x === undefined) return '—';
   if (!isFinite(x)) return '—';
@@ -795,10 +792,10 @@ function renderStats() {
 function renderPeNote() {
   const pe = params.v * (params.b - params.a) / params.D;
   document.getElementById('pe-note').textContent =
-    `Péclet number Pe = v(b−a)/D = ${pe.toFixed(2)}. Change parameters live; statistics update continuously. "Clear stats" starts fresh.`;
+    `Péclet number Pe = v(b−a)/D = ${pe.toFixed(2)}.;
 }
 
-// --- animation loop ---------------------------------------------------------
+//  animation loop 
 function frame() {
   tick();
   renderTrajectory();
@@ -807,7 +804,7 @@ function frame() {
   requestAnimationFrame(frame);
 }
 
-// --- controls wiring --------------------------------------------------------
+//  controls wiring 
 function bindSlider(id, key, digits = 2, onChange = null) {
   const el = document.getElementById(id);
   const valEl = document.getElementById(id + '-val');
