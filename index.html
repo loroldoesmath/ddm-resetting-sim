@@ -8,7 +8,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     background: #ffffff;
-    color: #a89078;
+    color: #000;
     font-family: Arial, sans-serif;
     font-size: 13px;
     line-height: 1.4;
@@ -24,11 +24,11 @@
   }
   header .sub {
     font-size: 12px;
-    color: #a89078;
+    color: #000;
   }
   header .author {
     font-size: 11px;
-    color: #a89078;
+    color: #000;
     margin-top: 4px;
   }
   main {
@@ -67,7 +67,7 @@
     cursor: pointer;
     text-align: center;
     font-size: 11px;
-    color: #a89078;
+    color: #000;
   }
   .radio-row label.active { background: #7a0d1a; color: #fff; border-color: #7a0d1a; }
   .radio-row input { display: none; }
@@ -105,15 +105,15 @@
     font-size: 12px;
   }
   .stat { padding: 4px 0; border-bottom: 1px solid #a89078; }
-  .stat .label { font-size: 11px; color: #a89078; }
+  .stat .label { font-size: 11px; color: #000; }
   .stat .value {
     font-size: 16px;
     color: #7a0d1a;
     font-weight: bold;
     font-family: Arial, sans-serif;
   }
-  .stat .sub { font-size: 10px; color: #a89078; }
-  .note { font-size: 11px; color: #a89078; margin-top: 6px; }
+  .stat .sub { font-size: 10px; color: #000; }
+  .note { font-size: 11px; color: #000; margin-top: 6px; }
   @media (max-width: 800px) {
     main { grid-template-columns: 1fr; }
     aside { border-right: none; border-bottom: 1px solid #a89078; }
@@ -456,7 +456,7 @@ function renderTrajectory() {
   trajCtx.lineTo(pad.l + plotW, yToPx(params.b));
   trajCtx.stroke();
 
-  trajCtx.strokeStyle = '#a89078';
+  trajCtx.strokeStyle = '#000';
   trajCtx.setLineDash([3, 3]);
   trajCtx.lineWidth = 0.5;
   trajCtx.beginPath();
@@ -469,7 +469,7 @@ function renderTrajectory() {
   if (nSnap >= 2) {
     const N = params.N;
     for (let i = 0; i < N; i++) {
-      trajCtx.strokeStyle = 'rgba(168, 144, 120, 0.7)';
+      trajCtx.strokeStyle = 'rgba(0, 0, 0, 0.55)';
       trajCtx.lineWidth = 0.6;
       trajCtx.beginPath();
       let started = false;
@@ -498,15 +498,15 @@ function renderTrajectory() {
     }
   }
 
-  trajCtx.fillStyle = '#7a0d1a';
+  trajCtx.fillStyle = '#000';
   const dotX = xToPx(sim.simTime);
   for (const p of sim.particles) {
     trajCtx.beginPath();
-    trajCtx.arc(dotX, yToPx(p.x), 1.5, 0, 2 * Math.PI);
+    trajCtx.arc(dotX, yToPx(p.x), 1.8, 0, 2 * Math.PI);
     trajCtx.fill();
   }
 
-  trajCtx.fillStyle = '#a89078';
+  trajCtx.fillStyle = '#000';
   trajCtx.font = '10px Arial, sans-serif';
   trajCtx.textAlign = 'right';
   trajCtx.textBaseline = 'middle';
@@ -535,7 +535,7 @@ function renderHistogram() {
 
   const n = sim.absorbTime.length;
   if (n === 0) {
-    histCtx.fillStyle = '#a89078';
+    histCtx.fillStyle = '#000';
     histCtx.font = '11px Arial, sans-serif';
     histCtx.textAlign = 'center';
     histCtx.textBaseline = 'middle';
@@ -571,7 +571,7 @@ function renderHistogram() {
     histCtx.fillRect(x, pad.t + plotH - bH - aH, barW, aH);
   }
 
-  histCtx.fillStyle = '#a89078';
+  histCtx.fillStyle = '#000';
   histCtx.font = '10px Arial, sans-serif';
   histCtx.textAlign = 'left';
   histCtx.textBaseline = 'top';
@@ -584,10 +584,11 @@ function renderHistogram() {
   histCtx.textBaseline = 'middle';
   histCtx.fillStyle = '#7a0d1a';
   histCtx.fillRect(8, pad.t + 8, 10, 10);
-  histCtx.fillStyle = '#a89078';
+  histCtx.fillStyle = '#000';
   histCtx.fillText('hit b', 22, pad.t + 13);
   histCtx.fillStyle = '#a89078';
   histCtx.fillRect(8, pad.t + 26, 10, 10);
+  histCtx.fillStyle = '#000';
   histCtx.fillText('hit a', 22, pad.t + 31);
 }
 
