@@ -3,223 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Drift Diffusion Model with Resetting — Agent-Based Model</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+<title>Drift Diffusion Model with Resetting</title>
 <style>
-  :root {
-    --bg: #ffffff;
-    --fg: #3a2a1a;
-    --accent: #7a0d1a;
-    --muted: #a89887;
-    --line: #d8ccbf;
-    --panel-bg: #fbf8f4;
-  }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
-    margin: 0; padding: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font-family: 'Ubuntu Mono', monospace;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 1.5;
+    background: #ffffff;
+    color: #000000;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
   }
   header {
-    padding: 24px 32px 12px;
-    border-bottom: 1px solid var(--line);
+    padding: 16px 20px 10px;
+    border-bottom: 1px solid #000;
   }
   header h1 {
-    font-family: 'Ubuntu', sans-serif;
-    font-weight: 500;
-    font-size: 22px;
-    margin: 0 0 4px 0;
-    color: var(--accent);
-    letter-spacing: 0.02em;
+    font-size: 16px;
+    font-weight: bold;
+    color: #7a0d1a;
   }
   header .sub {
     font-size: 12px;
-    color: var(--muted);
+    color: #000;
   }
   header .author {
-    font-size: 12px;
-    color: var(--fg);
-    margin-top: 8px;
+    font-size: 11px;
+    color: #000;
+    margin-top: 4px;
   }
   main {
     display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 0;
-    min-height: calc(100vh - 90px);
+    grid-template-columns: 220px 1fr;
+    min-height: calc(100vh - 60px);
   }
   aside {
-    padding: 20px 20px;
-    border-right: 1px solid var(--line);
-    background: var(--panel-bg);
+    padding: 12px 14px;
+    border-right: 1px solid #000;
   }
-  .controls-group {
-    margin-bottom: 22px;
-  }
+  .controls-group { margin-bottom: 16px; }
   .controls-group h3 {
-    font-family: 'Ubuntu', sans-serif;
-    font-weight: 500;
     font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    margin: 0 0 10px 0;
-    padding-bottom: 4px;
-    border-bottom: 1px dashed var(--line);
+    font-weight: bold;
+    color: #7a0d1a;
+    margin-bottom: 6px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid #000;
   }
-  .control {
-    margin-bottom: 12px;
-  }
+  .control { margin-bottom: 8px; }
   .control label {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
   }
-  .control label .val {
-    color: var(--accent);
-    font-weight: 700;
-  }
-  .control input[type="range"] {
-    width: 100%;
-    accent-color: var(--accent);
-  }
-  .control input[type="number"] {
-    width: 100%;
-    padding: 4px 6px;
-    border: 1px solid var(--line);
-    background: var(--bg);
-    font-family: inherit;
-    font-size: 12px;
-    color: var(--fg);
-  }
-  .radio-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 4px;
-  }
+  .control label .val { color: #7a0d1a; font-weight: bold; }
+  .control input[type="range"] { width: 100%; accent-color: #7a0d1a; }
+  .radio-row { display: flex; gap: 4px; margin-top: 2px; }
   .radio-row label {
     flex: 1;
-    padding: 5px 8px;
-    border: 1px solid var(--line);
-    background: var(--bg);
+    padding: 3px 4px;
+    border: 1px solid #000;
+    background: #fff;
     cursor: pointer;
     text-align: center;
     font-size: 11px;
-    display: block;
-    color: var(--fg);
+    color: #000;
   }
-  .radio-row label.active {
-    background: var(--accent);
-    color: var(--bg);
-    border-color: var(--accent);
-  }
-  .radio-row input {
-    display: none;
-  }
-  .btn-row {
-    display: flex;
-    gap: 6px;
-  }
+  .radio-row label.active { background: #7a0d1a; color: #fff; border-color: #7a0d1a; }
+  .radio-row input { display: none; }
+  .btn-row { display: flex; gap: 4px; }
   button {
     flex: 1;
-    padding: 8px 10px;
-    border: 1px solid var(--accent);
-    background: var(--bg);
-    color: var(--accent);
-    font-family: inherit;
+    padding: 5px 8px;
+    border: 1px solid #7a0d1a;
+    background: #fff;
+    color: #7a0d1a;
+    font-family: Arial, sans-serif;
     font-size: 12px;
     cursor: pointer;
-    font-weight: 700;
+    font-weight: bold;
   }
-  button:hover {
-    background: var(--accent);
-    color: var(--bg);
-  }
-  button.primary {
-    background: var(--accent);
-    color: var(--bg);
-  }
-  button.primary:hover {
-    background: var(--fg);
-    border-color: var(--fg);
-  }
-  section.canvas-area {
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .panel {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--line);
-  }
+  button:hover { background: #7a0d1a; color: #fff; }
+  button.primary { background: #7a0d1a; color: #fff; }
+  section.canvas-area { padding: 0; display: flex; flex-direction: column; }
+  .panel { padding: 12px 16px; border-bottom: 1px solid #000; }
   .panel:last-child { border-bottom: none; }
   .panel h2 {
-    font-family: 'Ubuntu', sans-serif;
-    font-weight: 500;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    margin: 0 0 8px 0;
+    font-size: 12px;
+    font-weight: bold;
+    color: #7a0d1a;
+    margin-bottom: 6px;
   }
-  canvas {
-    display: block;
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--line);
-  }
+  canvas { display: block; width: 100%; background: #fff; border: 1px solid #000; }
   #trajectory-canvas { height: 340px; }
   #histogram-canvas { height: 140px; }
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px 24px;
-    margin-top: 12px;
-    font-size: 13px;
-  }
-  .stat {
-    padding: 6px 0;
-    border-bottom: 1px dashed var(--line);
-  }
-  .stat .label {
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .stat .value {
-    font-size: 18px;
-    color: var(--accent);
-    font-weight: 700;
-    font-family: 'Ubuntu Mono', monospace;
-  }
-  .stat .sub {
-    font-size: 10px;
-    color: var(--muted);
-  }
-  .analytic-note {
-    font-size: 10px;
-    color: var(--muted);
+    gap: 8px 16px;
     margin-top: 8px;
-    font-style: italic;
+    font-size: 12px;
   }
-  footer {
-    padding: 12px 32px;
-    font-size: 10px;
-    color: var(--muted);
-    border-top: 1px solid var(--line);
-    text-align: right;
+  .stat { padding: 4px 0; border-bottom: 1px solid #000; }
+  .stat .label { font-size: 11px; color: #000; }
+  .stat .value {
+    font-size: 16px;
+    color: #7a0d1a;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
   }
-  footer a { color: var(--accent); text-decoration: none; }
+  .stat .sub { font-size: 10px; color: #000; }
+  .note { font-size: 11px; color: #000; margin-top: 6px; }
   @media (max-width: 800px) {
     main { grid-template-columns: 1fr; }
-    aside { border-right: none; border-bottom: 1px solid var(--line); }
+    aside { border-right: none; border-bottom: 1px solid #000; }
   }
 </style>
 </head>
@@ -228,7 +125,7 @@
 <header>
   <h1>Drift Diffusion Model with Resetting</h1>
   <div class="sub">Agent-Based Model</div>
-  <div class="author">Laurel Weber &middot; University of Utah &middot; Stochastics Group</div>
+  <div class="author">Laurel Weber. University of Utah. Stochastics Group.</div>
 </header>
 
 <main>
@@ -236,15 +133,15 @@
     <div class="controls-group">
       <h3>Domain</h3>
       <div class="control">
-        <label>Left boundary <span class="val" id="a-val">0.00</span></label>
+        <label>a <span class="val" id="a-val">0.00</span></label>
         <input type="range" id="a" min="-5" max="0" step="0.1" value="0">
       </div>
       <div class="control">
-        <label>Right boundary <span class="val" id="b-val">3.00</span></label>
+        <label>b <span class="val" id="b-val">3.00</span></label>
         <input type="range" id="b" min="0.5" max="10" step="0.1" value="3">
       </div>
       <div class="control">
-        <label>Start x<sub>0</sub> <span class="val" id="x0-val">1.00</span></label>
+        <label>x0 <span class="val" id="x0-val">1.00</span></label>
         <input type="range" id="x0" min="0" max="10" step="0.05" value="1">
       </div>
     </div>
@@ -252,11 +149,11 @@
     <div class="controls-group">
       <h3>Dynamics</h3>
       <div class="control">
-        <label>Drift v <span class="val" id="v-val">0.50</span></label>
+        <label>v <span class="val" id="v-val">0.50</span></label>
         <input type="range" id="v" min="-2" max="2" step="0.05" value="0.5">
       </div>
       <div class="control">
-        <label>Diffusion D <span class="val" id="D-val">1.00</span></label>
+        <label>D <span class="val" id="D-val">1.00</span></label>
         <input type="range" id="D" min="0.05" max="3" step="0.05" value="1">
       </div>
     </div>
@@ -266,14 +163,14 @@
       <div class="radio-row" id="reset-mode">
         <label class="active"><input type="radio" name="mode" value="none">off</label>
         <label><input type="radio" name="mode" value="poisson">poisson</label>
-        <label><input type="radio" name="mode" value="history">τ&nbsp;delay</label>
+        <label><input type="radio" name="mode" value="history">tau</label>
       </div>
-      <div class="control" id="r-control" style="margin-top:10px;">
-        <label>Rate r <span class="val" id="r-val">0.00</span></label>
+      <div class="control" id="r-control" style="margin-top:6px;">
+        <label>r <span class="val" id="r-val">0.00</span></label>
         <input type="range" id="r" min="0" max="10" step="0.1" value="0">
       </div>
       <div class="control" id="tau-control" style="display:none;">
-        <label>Delay τ <span class="val" id="tau-val">1.00</span></label>
+        <label>tau <span class="val" id="tau-val">1.00</span></label>
         <input type="range" id="tau" min="0.05" max="10" step="0.05" value="1">
       </div>
     </div>
@@ -281,109 +178,94 @@
     <div class="controls-group">
       <h3>Simulation</h3>
       <div class="control">
-        <label>Particles <span class="val" id="N-val">30</span></label>
+        <label>N <span class="val" id="N-val">30</span></label>
         <input type="range" id="N" min="1" max="200" step="1" value="30">
       </div>
       <div class="control">
-        <label>Timestep dt <span class="val" id="dt-val">0.010</span></label>
+        <label>dt <span class="val" id="dt-val">0.010</span></label>
         <input type="range" id="dt" min="0.001" max="0.05" step="0.001" value="0.01">
       </div>
       <div class="control">
-        <label>Speed <span class="val" id="speed-val">1x</span></label>
+        <label>speed <span class="val" id="speed-val">1x</span></label>
         <input type="range" id="speed" min="1" max="20" step="1" value="1">
       </div>
       <div class="btn-row">
         <button id="pause-btn" class="primary">pause</button>
-        <button id="reset-btn">clear stats</button>
+        <button id="reset-btn">clear</button>
       </div>
     </div>
   </aside>
 
   <section class="canvas-area">
     <div class="panel">
-      <h2>Trajectories &mdash; position v. time</h2>
+      <h2>Trajectories</h2>
       <canvas id="trajectory-canvas"></canvas>
-      <div class="analytic-note">
-        Solid horizontal lines: absorbing boundaries a, b. Dashed line: start x<sub>0</sub>.
-        Faded trails: individual particle paths. Each particle absorbs on contact with a boundary and respawns at x<sub>0</sub>.
-      </div>
     </div>
 
     <div class="panel">
-      <h2>Absorption distribution &mdash; hit-time histogram</h2>
+      <h2>First passage time distribution</h2>
       <canvas id="histogram-canvas"></canvas>
     </div>
 
     <div class="panel">
-      <h2>Running statistics</h2>
+      <h2>Statistics</h2>
       <div class="stats-grid">
         <div class="stat">
-          <div class="label">ε₊; P(hit b)</div>
-          <div class="value" id="stat-eps-plus">—</div>
-          <div class="sub" id="stat-eps-plus-ci">based on 0 absorptions</div>
+          <div class="label">eps+ = P(hit b)</div>
+          <div class="value" id="stat-eps-plus">0.000</div>
+          <div class="sub" id="stat-eps-plus-ci">n = 0</div>
         </div>
         <div class="stat">
-          <div class="label">ε₋; P(hit a)</div>
-          <div class="value" id="stat-eps-minus">—</div>
-          <div class="sub" id="stat-eps-minus-ci">&nbsp;</div>
+          <div class="label">eps- = P(hit a)</div>
+          <div class="value" id="stat-eps-minus">0.000</div>
+          <div class="sub">&nbsp;</div>
         </div>
         <div class="stat">
           <div class="label">MFPT</div>
-          <div class="value" id="stat-mfpt">—</div>
-          <div class="sub" id="stat-mfpt-sub">unconditional mean first passage</div>
+          <div class="value" id="stat-mfpt">0.000</div>
+          <div class="sub">unconditional</div>
         </div>
         <div class="stat">
-          <div class="label">⟨t⟩₊; cond. mean, hit b</div>
-          <div class="value" id="stat-t-plus">—</div>
+          <div class="label">&lt;t&gt;+ given hit b</div>
+          <div class="value" id="stat-t-plus">0.000</div>
           <div class="sub">&nbsp;</div>
         </div>
         <div class="stat">
-          <div class="label">⟨t⟩₋; cond. mean, hit a</div>
-          <div class="value" id="stat-t-minus">—</div>
+          <div class="label">&lt;t&gt;- given hit a</div>
+          <div class="value" id="stat-t-minus">0.000</div>
           <div class="sub">&nbsp;</div>
         </div>
         <div class="stat">
-          <div class="label">Sim time / absorptions</div>
+          <div class="label">absorptions</div>
           <div class="value" id="stat-count">0</div>
           <div class="sub" id="stat-simtime">t = 0.0</div>
         </div>
       </div>
-      <div class="analytic-note" id="pe-note">
-        Péclet number Pe = v(b−a)/D = 1.50. Change parameters live; statistics update continuously. "Clear stats" starts fresh.
-      </div>
+      <div class="note" id="pe-note">Pe = v(b-a)/D = 1.50</div>
     </div>
   </section>
 </main>
 
-<footer>
-  Based on Weber &amp; Lawley (2026), <em>Resetting Enforces Bias</em>.
-  Source: <a href="https://github.com/loroldoesmath/stochastics">github.com/loroldoesmath/stochastics</a>
-</footer>
-
 <script>
-
-// state 
 const params = {
   a: 0, b: 3, x0: 1,
   v: 0.5, D: 1,
-  mode: 'none',           // 'none' | 'poisson' | 'history'
+  mode: 'none',
   r: 0, tau: 1,
   N: 30, dt: 0.01,
   speed: 1,
 };
 
 const sim = {
-  particles: [],          // {x, birthTime, history: [[t,x],...] } history for τ-delay reset
+  particles: [],
   simTime: 0,
   running: true,
-  // Statistics
-  absorbAt: [],           // 'a' or 'b' per absorption
-  absorbTime: [],         // duration (time from birth) per absorption
-  trailSnapshots: [],     // rolling array of {t, positions:[...]} for trajectory canvas
-  maxTrailAge: 8,         // seconds of sim time to show trailing paths
+  absorbAt: [],
+  absorbTime: [],
+  trailSnapshots: [],
+  maxTrailAge: 8,
 };
 
-// randn (Box-Muller) 
 let _spare = null;
 function randn() {
   if (_spare !== null) { const s = _spare; _spare = null; return s; }
@@ -396,12 +278,10 @@ function randn() {
   return z0;
 }
 
-// --- particle lifecycle -----------------------------------------------------
 function makeParticle() {
   return {
     x: params.x0,
     birthTime: sim.simTime,
-    // history is only maintained if mode === 'history'; stored as array of [t, x] pairs
     history: params.mode === 'history' ? [[sim.simTime, params.x0]] : null,
   };
 }
@@ -417,35 +297,24 @@ function ensureParticleCount() {
   if (sim.particles.length > params.N) sim.particles.length = params.N;
 }
 
-// one integration step for a single particle
-// Euler-Maruyama with Brownian-bridge boundary correction.
-// If the raw step ends beyond a boundary, absorb. If it stays interior, then
-// compute the Brownian-bridge probability that the path DID touch a boundary
-// during the step; if a uniform random beats that, still absorb.
 function stepParticle(p) {
   const { a, b, v, D, dt, mode, r, tau } = params;
 
-  // Poisson reset: probability r*dt of firing in this step
   if (mode === 'poisson' && r > 0) {
     if (Math.random() < r * dt) {
       p.x = params.x0;
-      if (mode === 'history') p.history = [[sim.simTime, params.x0]];
       return null;
     }
   }
 
-  // History-dependent reset: also Poisson-clocked at rate r, but target is X(t-τ)
   if (mode === 'history' && r > 0) {
     if (Math.random() < r * dt) {
       const targetTime = sim.simTime - tau;
-      // find position at targetTime from history (linear search from oldest)
       let target = params.x0;
       if (p.history && p.history.length > 0) {
         if (targetTime <= p.history[0][0]) {
-          // history doesn't reach back that far — fall back to x0
           target = params.x0;
         } else {
-          // find nearest bracketing entries
           for (let i = p.history.length - 1; i >= 0; i--) {
             if (p.history[i][0] <= targetTime) {
               target = p.history[i][1];
@@ -455,7 +324,6 @@ function stepParticle(p) {
         }
       }
       p.x = target;
-      // history continues (do NOT reset the buffer — that's the point of memory)
       return null;
     }
   }
@@ -465,7 +333,6 @@ function stepParticle(p) {
   const dW = randn();
   const xNew = xOld + v * dt + sigma * dW;
 
-  // Direct absorption check
   if (xNew <= a) {
     p.x = a;
     return { at: 'a', duration: (sim.simTime + dt) - p.birthTime };
@@ -475,18 +342,10 @@ function stepParticle(p) {
     return { at: 'b', duration: (sim.simTime + dt) - p.birthTime };
   }
 
-  // Brownian-bridge correction for near-miss (both endpoints interior but the
-  // path may have touched a boundary between them). For a bridge from x_old
-  // to x_new over [0, dt] with variance 2*D*dt, the probability that the
-  // path hits level L given endpoints y1, y2 (with L outside [y1,y2] region)
-  // is exp( -2*(L-y1)*(L-y2) / (2*D*dt) ), the classical Brownian bridge
-  // maximum formula.
   const varStep = 2 * D * dt;
-  // hit level a (below both endpoints if xOld,xNew > a)
   const pHitA = Math.exp(-2 * (xOld - a) * (xNew - a) / varStep);
   if (Math.random() < pHitA) {
     p.x = a;
-    // approximate hit time as uniformly in step; use midpoint for duration
     return { at: 'a', duration: (sim.simTime + dt * 0.5) - p.birthTime };
   }
   const pHitB = Math.exp(-2 * (b - xOld) * (b - xNew) / varStep);
@@ -497,11 +356,9 @@ function stepParticle(p) {
 
   p.x = xNew;
 
-  // Trim history buffer for τ-delay mode (keep 2τ of history at most)
   if (mode === 'history' && p.history !== null) {
     p.history.push([sim.simTime + dt, xNew]);
     const cutoff = sim.simTime + dt - 2 * tau;
-    // splice from front while too old (but keep at least 2 entries)
     let dropTo = 0;
     while (dropTo < p.history.length - 2 && p.history[dropTo][0] < cutoff) dropTo++;
     if (dropTo > 0) p.history.splice(0, dropTo);
@@ -510,12 +367,9 @@ function stepParticle(p) {
   return null;
 }
 
-// main simulation tick
 function tick() {
   if (!sim.running) return;
-
   ensureParticleCount();
-
   const stepsPerFrame = params.speed;
   for (let s = 0; s < stepsPerFrame; s++) {
     for (const p of sim.particles) {
@@ -528,8 +382,6 @@ function tick() {
     }
     sim.simTime += params.dt;
   }
-
-  // Snapshot current positions for trailing trajectory display
   sim.trailSnapshots.push({
     t: sim.simTime,
     positions: sim.particles.map(p => p.x),
@@ -540,7 +392,6 @@ function tick() {
   }
 }
 
-//  statistics 
 function computeStats() {
   const n = sim.absorbAt.length;
   if (n === 0) return null;
@@ -562,7 +413,6 @@ function computeStats() {
   };
 }
 
-// rendering: trajectory canvas 
 const trajCanvas = document.getElementById('trajectory-canvas');
 const trajCtx = trajCanvas.getContext('2d');
 const histCanvas = document.getElementById('histogram-canvas');
@@ -580,27 +430,23 @@ function resizeCanvas(canvas) {
 function renderTrajectory() {
   const rect = trajCanvas.getBoundingClientRect();
   const W = rect.width, H = rect.height;
-  const pad = { l: 40, r: 12, t: 8, b: 24 };
+  const pad = { l: 40, r: 12, t: 8, b: 22 };
   const plotW = W - pad.l - pad.r;
   const plotH = H - pad.t - pad.b;
 
-  trajCtx.fillStyle = '#fbf8f4';
-  trajCtx.fillRect(0, 0, W, H);
   trajCtx.fillStyle = '#ffffff';
-  trajCtx.fillRect(pad.l, pad.t, plotW, plotH);
-  trajCtx.strokeStyle = '#d8ccbf';
+  trajCtx.fillRect(0, 0, W, H);
+
+  trajCtx.strokeStyle = '#000';
   trajCtx.lineWidth = 1;
   trajCtx.strokeRect(pad.l, pad.t, plotW, plotH);
 
-  // Y axis: position between a and b
   const yRange = params.b - params.a;
   const yToPx = y => pad.t + plotH * (1 - (y - params.a) / yRange);
-  // X axis: time, showing the trailing window
   const tMax = sim.simTime;
   const tMin = Math.max(0, tMax - sim.maxTrailAge);
   const xToPx = t => pad.l + plotW * ((t - tMin) / Math.max(1e-9, tMax - tMin));
 
-  // absorbing boundaries: solid dark red
   trajCtx.strokeStyle = '#7a0d1a';
   trajCtx.lineWidth = 1.5;
   trajCtx.beginPath();
@@ -610,32 +456,27 @@ function renderTrajectory() {
   trajCtx.lineTo(pad.l + plotW, yToPx(params.b));
   trajCtx.stroke();
 
-  // start line: dashed brown
-  trajCtx.strokeStyle = '#a89887';
-  trajCtx.setLineDash([4, 4]);
-  trajCtx.lineWidth = 1;
+  trajCtx.strokeStyle = '#000';
+  trajCtx.setLineDash([3, 3]);
+  trajCtx.lineWidth = 0.5;
   trajCtx.beginPath();
   trajCtx.moveTo(pad.l, yToPx(params.x0));
   trajCtx.lineTo(pad.l + plotW, yToPx(params.x0));
   trajCtx.stroke();
   trajCtx.setLineDash([]);
 
-  // trailing paths — one polyline per particle, over the snapshot buffer
   const nSnap = sim.trailSnapshots.length;
   if (nSnap >= 2) {
     const N = params.N;
     for (let i = 0; i < N; i++) {
-      trajCtx.strokeStyle = 'rgba(58, 42, 26, 0.35)';
-      trajCtx.lineWidth = 0.7;
+      trajCtx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+      trajCtx.lineWidth = 0.6;
       trajCtx.beginPath();
       let started = false;
       for (let j = 0; j < nSnap; j++) {
         const snap = sim.trailSnapshots[j];
         if (i >= snap.positions.length) continue;
         const pos = snap.positions[i];
-        // guard against respawn discontinuities: if adjacent snapshots differ by more
-        // than what diffusion could plausibly produce (a small multiple of sqrt(2*D*dt)),
-        // break the line
         if (started && j > 0) {
           const prev = sim.trailSnapshots[j - 1];
           if (i < prev.positions.length) {
@@ -657,31 +498,28 @@ function renderTrajectory() {
     }
   }
 
-  // current-position dots
   trajCtx.fillStyle = '#7a0d1a';
   const dotX = xToPx(sim.simTime);
   for (const p of sim.particles) {
     trajCtx.beginPath();
-    trajCtx.arc(dotX, yToPx(p.x), 1.8, 0, 2 * Math.PI);
+    trajCtx.arc(dotX, yToPx(p.x), 1.5, 0, 2 * Math.PI);
     trajCtx.fill();
   }
 
-  // axis labels
-  trajCtx.fillStyle = '#3a2a1a';
-  trajCtx.font = '10px "Ubuntu Mono", monospace';
+  trajCtx.fillStyle = '#000';
+  trajCtx.font = '10px Arial, sans-serif';
   trajCtx.textAlign = 'right';
   trajCtx.textBaseline = 'middle';
-  trajCtx.fillText(params.b.toFixed(2), pad.l - 4, yToPx(params.b));
-  trajCtx.fillText(params.a.toFixed(2), pad.l - 4, yToPx(params.a));
-  trajCtx.fillText(params.x0.toFixed(2), pad.l - 4, yToPx(params.x0));
-
-  trajCtx.textAlign = 'center';
+  trajCtx.fillText(params.b.toFixed(2), pad.l - 3, yToPx(params.b));
+  trajCtx.fillText(params.a.toFixed(2), pad.l - 3, yToPx(params.a));
+  trajCtx.fillText(params.x0.toFixed(2), pad.l - 3, yToPx(params.x0));
+  trajCtx.textAlign = 'left';
   trajCtx.textBaseline = 'top';
-  trajCtx.fillText(`t = ${tMin.toFixed(1)}`, pad.l, pad.t + plotH + 4);
-  trajCtx.fillText(`t = ${tMax.toFixed(1)}`, pad.l + plotW, pad.t + plotH + 4);
+  trajCtx.fillText('t = ' + tMin.toFixed(1), pad.l, pad.t + plotH + 4);
+  trajCtx.textAlign = 'right';
+  trajCtx.fillText('t = ' + tMax.toFixed(1), pad.l + plotW, pad.t + plotH + 4);
 }
 
-// rendering: histogram of first-passage times 
 function renderHistogram() {
   const rect = histCanvas.getBoundingClientRect();
   const W = rect.width, H = rect.height;
@@ -689,24 +527,22 @@ function renderHistogram() {
   const plotW = W - pad.l - pad.r;
   const plotH = H - pad.t - pad.b;
 
-  histCtx.fillStyle = '#fbf8f4';
+  histCtx.fillStyle = '#fff';
   histCtx.fillRect(0, 0, W, H);
-  histCtx.fillStyle = '#ffffff';
-  histCtx.fillRect(pad.l, pad.t, plotW, plotH);
-  histCtx.strokeStyle = '#d8ccbf';
+  histCtx.strokeStyle = '#000';
+  histCtx.lineWidth = 1;
   histCtx.strokeRect(pad.l, pad.t, plotW, plotH);
 
   const n = sim.absorbTime.length;
   if (n === 0) {
-    histCtx.fillStyle = '#a89887';
-    histCtx.font = '11px "Ubuntu Mono", monospace';
+    histCtx.fillStyle = '#000';
+    histCtx.font = '11px Arial, sans-serif';
     histCtx.textAlign = 'center';
     histCtx.textBaseline = 'middle';
-    histCtx.fillText('waiting for absorptions…', W / 2, H / 2);
+    histCtx.fillText('no absorptions yet', W / 2, H / 2);
     return;
   }
 
-  // adaptive max: 95th percentile to avoid outliers dominating
   const sorted = [...sim.absorbTime].sort((a, b) => a - b);
   const tMaxHist = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))] * 1.15 || 1;
   const nBins = 40;
@@ -729,51 +565,46 @@ function renderHistogram() {
     const bH = binsB[i] / maxCount * plotH;
     const aH = binsA[i] / maxCount * plotH;
     const x = pad.l + i * barW;
-    // b (success) — accent color
     histCtx.fillStyle = '#7a0d1a';
-    histCtx.fillRect(x + 0.5, pad.t + plotH - bH, barW - 1, bH);
-    // a (failure) — muted brown, stacked
-    histCtx.fillStyle = '#a89887';
-    histCtx.fillRect(x + 0.5, pad.t + plotH - bH - aH, barW - 1, aH);
+    histCtx.fillRect(x, pad.t + plotH - bH, barW, bH);
+    histCtx.fillStyle = '#000';
+    histCtx.fillRect(x, pad.t + plotH - bH - aH, barW, aH);
   }
 
-  histCtx.fillStyle = '#3a2a1a';
-  histCtx.font = '10px "Ubuntu Mono", monospace';
+  histCtx.fillStyle = '#000';
+  histCtx.font = '10px Arial, sans-serif';
   histCtx.textAlign = 'left';
   histCtx.textBaseline = 'top';
-  histCtx.fillText('0', pad.l, pad.t + plotH + 3);
+  histCtx.fillText('t = 0', pad.l, pad.t + plotH + 4);
   histCtx.textAlign = 'right';
-  histCtx.fillText(`t = ${tMaxHist.toFixed(2)}`, pad.l + plotW, pad.t + plotH + 3);
-  // legend
+  histCtx.fillText('t = ' + tMaxHist.toFixed(2), pad.l + plotW, pad.t + plotH + 4);
+
   histCtx.textAlign = 'left';
   histCtx.fillStyle = '#7a0d1a';
-  histCtx.fillRect(pad.l + 6, pad.t + 4, 10, 8);
-  histCtx.fillStyle = '#3a2a1a';
-  histCtx.fillText('hit b', pad.l + 20, pad.t + 4);
-  histCtx.fillStyle = '#a89887';
-  histCtx.fillRect(pad.l + 60, pad.t + 4, 10, 8);
-  histCtx.fillStyle = '#3a2a1a';
-  histCtx.fillText('hit a', pad.l + 74, pad.t + 4);
+  histCtx.fillRect(pad.l + 4, pad.t + 4, 8, 8);
+  histCtx.fillStyle = '#000';
+  histCtx.fillText('hit b', pad.l + 16, pad.t + 3);
+  histCtx.fillStyle = '#000';
+  histCtx.fillRect(pad.l + 46, pad.t + 4, 8, 8);
+  histCtx.fillText('hit a', pad.l + 58, pad.t + 3);
 }
 
-//  rendering: stats block 
-function fmt(x, d = 3) {
-  if (x === null || x === undefined) return '—';
-  if (!isFinite(x)) return '—';
+function fmt(x, d) {
+  if (x === null || x === undefined || !isFinite(x)) return '0.000';
   return x.toFixed(d);
 }
 
 function renderStats() {
   const s = computeStats();
   if (s === null) {
-    document.getElementById('stat-eps-plus').textContent = '—';
-    document.getElementById('stat-eps-minus').textContent = '—';
-    document.getElementById('stat-mfpt').textContent = '—';
-    document.getElementById('stat-t-plus').textContent = '—';
-    document.getElementById('stat-t-minus').textContent = '—';
+    document.getElementById('stat-eps-plus').textContent = '0.000';
+    document.getElementById('stat-eps-minus').textContent = '0.000';
+    document.getElementById('stat-mfpt').textContent = '0.000';
+    document.getElementById('stat-t-plus').textContent = '0.000';
+    document.getElementById('stat-t-minus').textContent = '0.000';
     document.getElementById('stat-count').textContent = '0';
-    document.getElementById('stat-simtime').textContent = `t = ${sim.simTime.toFixed(1)}`;
-    document.getElementById('stat-eps-plus-ci').textContent = 'based on 0 absorptions';
+    document.getElementById('stat-simtime').textContent = 't = ' + sim.simTime.toFixed(1);
+    document.getElementById('stat-eps-plus-ci').textContent = 'n = 0';
     return;
   }
   document.getElementById('stat-eps-plus').textContent = fmt(s.epsPlus, 3);
@@ -782,20 +613,16 @@ function renderStats() {
   document.getElementById('stat-t-plus').textContent = fmt(s.tPlus, 3);
   document.getElementById('stat-t-minus').textContent = fmt(s.tMinus, 3);
   document.getElementById('stat-count').textContent = String(s.n);
-  document.getElementById('stat-simtime').textContent = `t = ${sim.simTime.toFixed(1)}`;
-  // rough SE for eps_plus (binomial)
+  document.getElementById('stat-simtime').textContent = 't = ' + sim.simTime.toFixed(1);
   const se = Math.sqrt(s.epsPlus * (1 - s.epsPlus) / s.n);
-  document.getElementById('stat-eps-plus-ci').textContent =
-    `n = ${s.n}, ±${fmt(1.96 * se, 3)} (95% CI)`;
+  document.getElementById('stat-eps-plus-ci').textContent = 'n = ' + s.n + ', SE = ' + fmt(se, 3);
 }
 
 function renderPeNote() {
   const pe = params.v * (params.b - params.a) / params.D;
-  document.getElementById('pe-note').textContent =
-    `Péclet number Pe = v(b−a)/D = ${pe.toFixed(2)}.;
+  document.getElementById('pe-note').textContent = 'Pe = v(b-a)/D = ' + pe.toFixed(2);
 }
 
-//  animation loop 
 function frame() {
   tick();
   renderTrajectory();
@@ -804,8 +631,7 @@ function frame() {
   requestAnimationFrame(frame);
 }
 
-//  controls wiring 
-function bindSlider(id, key, digits = 2, onChange = null) {
+function bindSlider(id, key, digits, onChange) {
   const el = document.getElementById(id);
   const valEl = document.getElementById(id + '-val');
   const sync = () => {
@@ -819,9 +645,7 @@ function bindSlider(id, key, digits = 2, onChange = null) {
   sync();
 }
 
-// Wire numeric-ish sliders
 bindSlider('a', 'a', 2, (v) => {
-  // keep x0 in (a, b), and re-bound x0 slider
   const x0el = document.getElementById('x0');
   x0el.min = v + 0.05;
   if (parseFloat(x0el.value) <= v) {
@@ -849,7 +673,6 @@ bindSlider('speed', 'speed', 0, () => {
   document.getElementById('speed-val').textContent = params.speed + 'x';
 });
 
-// Reset-mode radios
 const rControl = document.getElementById('r-control');
 const tauControl = document.getElementById('tau-control');
 document.querySelectorAll('#reset-mode input[type=radio]').forEach(radio => {
@@ -867,7 +690,6 @@ document.querySelectorAll('#reset-mode input[type=radio]').forEach(radio => {
       rControl.style.display = 'block';
       tauControl.style.display = 'block';
     }
-    // when switching to/from history mode, rebuild particles so history buffers match
     for (const p of sim.particles) {
       if (params.mode === 'history' && !p.history) {
         p.history = [[sim.simTime, p.x]];
@@ -879,7 +701,6 @@ document.querySelectorAll('#reset-mode input[type=radio]').forEach(radio => {
 });
 document.querySelector('#reset-mode input[value="none"]').checked = true;
 
-// Buttons
 document.getElementById('pause-btn').addEventListener('click', (e) => {
   sim.running = !sim.running;
   e.target.textContent = sim.running ? 'pause' : 'resume';
@@ -887,10 +708,8 @@ document.getElementById('pause-btn').addEventListener('click', (e) => {
 document.getElementById('reset-btn').addEventListener('click', () => {
   sim.absorbAt = [];
   sim.absorbTime = [];
-  // don't reset particles or simTime; just the accumulated stats
 });
 
-// initialize
 function init() {
   resizeCanvas(trajCanvas);
   resizeCanvas(histCanvas);
